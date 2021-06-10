@@ -27,8 +27,8 @@ def _init_():
     os.system('cp data.py checkpoints' + '/' + args.exp_name + '/' + 'data.py.backup')
 
 def train(args,io):
-    train_loader = DataLoader(PsbDataset(partition='train',data_path=args.data_path,label_path=args.label_path,index=args.index),batch_size=args.batch_size,num_workers=0)
-    test_loader = DataLoader(PsbDataset(partition='test',data_path=args.data_path,label_path=args.label_path,index=args.index),batch_size=args.batch_size,num_workers=0)
+    train_loader = DataLoader(PsbDataset(partition='train',data_path=args.data_path,label_path=args.label_path,index=args.index),batch_size=args.batch_size,shuffle=True,num_workers=0)
+    test_loader = DataLoader(PsbDataset(partition='test',data_path=args.data_path,label_path=args.label_path,index=args.index),batch_size=args.batch_size,shuffle=True,num_workers=0)
 
     device = torch.device("cuda" if args.cuda else "cpu")
 
@@ -150,7 +150,9 @@ def train(args,io):
                 best_test_acc = test_acc
                 torch.save(model.state_dict(), 'checkpoints/%s/models/model.pth' % args.exp_name)
             '''
-    torch.save(model.state_dict(), 'checkpoints/%s/models/model.pth' % args.exp_name)
+    file_name='./model/%s.pth' % args.exp_name
+    torch.save(model.state_dict(), file_name)
+    #torch.save(model.state_dict(), './checkpoints/%s/models/model.pth' % args.exp_name)
 
 def test(args, io):
     train_loader = DataLoader(
@@ -199,29 +201,29 @@ if __name__ == "__main__":
                         help='Size of batch)')
     parser.add_argument('--epochs', type=int, default=100, metavar='N',
                         help='number of episode to train ')
-    parser.add_argument('--use_sgd', type=bool, default=True,
+    parser.add_argument('--use_sgd', type=bool, default=False,
                         help='Use SGD')
-    parser.add_argument('--lr', type=float, default=0.0001, metavar='LR',
-                        help='learning rate (default: 0.001, 0.1 if using sgd)')
+    parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
+                        help='learning rate (default: 0.0005, 0.1 if using sgd)')
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
                         help='SGD momentum (default: 0.9)')
     parser.add_argument('--no_cuda', type=bool, default=False,
                         help='enables CUDA training')
-    parser.add_argument('--out_c', type=int, default=8,
+    parser.add_argument('--out_c', type=int, default=5,
                         help='classes of this shape')
     parser.add_argument('--eval', type=bool,  default=False,
                         help='evaluate the model')
-    parser.add_argument('--label_path', type=str, default='E:/transf_mesh/PSB_new/seg_consistent/',
+    parser.add_argument('--label_path', type=str, default='/content/Transformer_seg/PCT_Pytorch-main/label/',
                         help='path of label')
-    parser.add_argument('--data_path', type=str, default='E:/transf_mesh/features/',
+    parser.add_argument('--data_path', type=str, default='/content/Transformer_seg/PCT_Pytorch-main/data/',
                         help='path of dataset')
     parser.add_argument('--dropout', type=float, default=0.5,
                         help='dropout rate')
-    parser.add_argument('--index', type=int, default=2,
+    parser.add_argument('--index', type=int, default=3,
                         help='which class to train')
-    parser.add_argument('--model_path', type=str, default='E:/transf_mesh/PCT_Pytorch-main/checkpoints/exp/models/model.pth', metavar='N',
+    parser.add_argument('--model_path', type=str, default='/content/Transformer_seg/PCT_Pytorch-main/model/exp.pth', metavar='N',
                         help='Pretrained model path')
-    parser.add_argument('--pre_train', type=bool, default=False,
+    parser.add_argument('--pre_train', type=bool, default=True,
                         help='use Pretrained model')
     args = parser.parse_args()
 

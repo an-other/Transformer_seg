@@ -22,12 +22,12 @@ class Pct_seg(nn.Module):
 
         self.conv_fuse = nn.Sequential(nn.Conv1d(16, 8, kernel_size=1, bias=False),
                                         nn.BatchNorm1d(8),
-                                        nn.LeakyReLU(negative_slope=0.2),
+                                        nn.LeakyReLU(negative_slope=-0.1),
                                        )
 
         self.seg = nn.Sequential(nn.Conv1d(8, 8, kernel_size=1, bias=False),
                                        nn.BatchNorm1d(8),
-                                       nn.LeakyReLU(negative_slope=0.2),
+                                       nn.LeakyReLU(negative_slope=-0.1),
 
                                      nn.Conv1d(8, out_channels=self.out_c, kernel_size=1, bias=False),
 
@@ -65,12 +65,12 @@ class Pct_seg(nn.Module):
 
         #(1,16,N)
         #print(x.shape)
-        x = self.pt_last(x)
+        self.after_transformer= self.pt_last(x)
 
         #x = x.permute(0, 2, 1)
         #x=x+self.before_transformer
         #(1,16, N)
-        x = x+self.before_transformer # 16
+        x = self.after_transformer # 16
         self.face_feature = self.conv_fuse(x)                # in:16, out:8
 
         x=self.seg(self.face_feature)  #in 8 out c
